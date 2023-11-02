@@ -12,7 +12,7 @@
 // Student authors (fill in below):
 // NMec:  Name:
 // 95316  João Diogo Craveiro Ferreira
-// 
+// 103592 Bernardo Rodrigues Borges
 // 
 // Date:
 //
@@ -180,10 +180,12 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// Ensures: (*imgp)==NULL.
 /// Should never fail, and should preserve global errno/errCause.
 void ImageDestroy(Image* imgp) { ///
-  assert (imgp != NULL);
-  // Insert your code here!
+  if(imgp == NULL){return;}
+  Image i = imgp;
+  free(i->pixel);
+  free(i);
+  imgp = NULL;
 }
-
 
 /// PGM file operations
 
