@@ -49,7 +49,7 @@ const uint8 PixMax = 255;
 struct image {
   int width;
   int height;
-  int maxval;   // maximum gray value (pixels with maxval are pure WHITE)
+  uint8 maxval;   // maximum gray value (pixels with maxval are pure WHITE)
   uint8* pixel; // pixel data (a raster scan)
 };
 
