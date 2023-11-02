@@ -171,7 +171,27 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (width >= 0);
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
-  // Insert your code here!
+  
+  struct image *img = malloc(sizeof(struct image));
+  
+  if (img) {
+    uint8 *pixels = malloc(width * height * sizeof(uint8));
+    
+    if (pixels) {
+      img->width = width;
+      img->height = height;
+      img->maxval = maxval;
+      img->pixel = pixels;
+    } else {
+      /* FIXME: Falta definir errno e mensagem de erro. */
+      free(img);
+      img = NULL;
+    }
+  } else {
+    /* FIXME: Falta definir errno e mensagem de erro. */
+  }
+  
+  return img;
 }
 
 /// Destroy the image pointed to by (*imgp).
