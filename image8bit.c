@@ -391,9 +391,8 @@ void ImageNegative(Image img) { ///
         pix[i] = maxval - pix[i];
     }
 
-    // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
-    // incrementar em 2 * length?
-    PIXMEM += (unsigned long)length;
+    // Incrementar duas vezes (leitura e escrita).
+    PIXMEM += (unsigned long)length * 2;
 }
 
 /// Apply threshold to image.
@@ -410,9 +409,8 @@ void ImageThreshold(Image img, uint8 thr) { ///
         pix[i] = pix[i] >= thr ? maxval : 0;
     }
 
-    // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
-    // incrementar em 2 * length?
-    PIXMEM += (unsigned long)length;
+    // Incrementar duas vezes (leitura e escrita).
+    PIXMEM += (unsigned long)length * 2;
 }
 
 /// Brighten image by a factor.
@@ -431,9 +429,8 @@ void ImageBrighten(Image img, double factor) { ///
         pix[i] = u8min((uint8)round(pix[i] * factor), maxval);
     }
 
-    // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
-    // incrementar em 2 * length?
-    PIXMEM += (unsigned long)length;
+    // Incrementar duas vezes (leitura e escrita).
+    PIXMEM += (unsigned long)length * 2;
 }
 
 
