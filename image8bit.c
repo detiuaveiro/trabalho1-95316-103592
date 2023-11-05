@@ -200,11 +200,11 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// Ensures: (*imgp)==NULL.
 /// Should never fail, and should preserve global errno/errCause.
 void ImageDestroy(Image* imgp) { ///
-    if(imgp == NULL){return;}
-    Image i = *imgp;
-    free(i->pixel);
-    free(i);
-    imgp = NULL;
+    if(imgp && (*imgp)){
+        free((*imgp)->pixel);
+        free(*imgp);
+        *imgp = NULL;
+    }
 }
 
 /// PGM file operations
