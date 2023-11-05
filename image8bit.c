@@ -49,6 +49,7 @@ const uint8 PixMax = 255;
 struct image {
     int width;
     int height;
+    // NOTA: Originalmente, maxval era do tipo "int". Alterámos para "uint8".
     uint8 maxval;   // maximum gray value (pixels with maxval are pure WHITE)
     uint8* pixel; // pixel data (a raster scan)
 };
@@ -171,11 +172,15 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
     assert (width >= 0);
     assert (height >= 0);
     assert (0 < maxval && maxval <= PixMax);
+
+    size_t buffer_size = width * height * sizeof(uint8);
     
     struct image *img = malloc(sizeof(struct image));
-    uint8 *pixels = malloc(width * height * sizeof(uint8));
+    uint8 *pixels = malloc(buffer_size);
     
     if (img && pixels) {
+        memset(pixels, 0, buffer_size);
+
         img->width = width;
         img->height = height;
         img->maxval = maxval;
