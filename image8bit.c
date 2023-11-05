@@ -377,7 +377,16 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// resulting in a "photographic negative" effect.
 void ImageNegative(Image img) { ///
     assert (img != NULL);
-    // Insert your code here!
+
+    uint8 maxval = img->maxval;
+    size_t length = img->width * img->height;
+    uint8 *const pix = img->pixel;
+
+    for (size_t i = 0; i < length; i++) {
+        pix[i] = maxval - pix[i];
+    }
+
+    PIXMEM += (unsigned long)length;
 }
 
 /// Apply threshold to image.
