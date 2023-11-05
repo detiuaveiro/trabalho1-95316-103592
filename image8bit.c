@@ -387,6 +387,8 @@ void ImageNegative(Image img) { ///
         pix[i] = maxval - pix[i];
     }
 
+    // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
+    // incrementar em 2 * length?
     PIXMEM += (unsigned long)length;
 }
 
@@ -395,7 +397,18 @@ void ImageNegative(Image img) { ///
 /// all pixels with level>=thr to white (maxval).
 void ImageThreshold(Image img, uint8 thr) { ///
     assert (img != NULL);
-    // Insert your code here!
+
+    uint8 maxval = img->maxval;
+    size_t length = img->width * img->height;
+    uint8 *const pix = img->pixel;
+
+    for (size_t i = 0; i < length; i++) {
+        pix[i] = pix[i] >= thr ? maxval : 0;
+    }
+
+    // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
+    // incrementar em 2 * length?
+    PIXMEM += (unsigned long)length;
 }
 
 /// Brighten image by a factor.
