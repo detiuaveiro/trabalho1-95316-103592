@@ -28,6 +28,9 @@
 #include <math.h>
 #include "instrumentation.h"
 
+uint8 u8max(uint8 a, uint8 b) { return (a >= b) ? a : b; }
+uint8 u8min(uint8 a, uint8 b) { return (a <= b) ? a : b; }
+
 // The data structure
 //
 // An image is stored in a structure containing 3 fields:
@@ -425,7 +428,7 @@ void ImageBrighten(Image img, double factor) { ///
     uint8 *const pix = img->pixel;
 
     for (size_t i = 0; i < length; i++) {
-        pix[i] = (uint8)round(pix[i] * factor) /* % maxval+1 */;
+        pix[i] = u8min((uint8)round(pix[i] * factor), maxval);
     }
 
     // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
