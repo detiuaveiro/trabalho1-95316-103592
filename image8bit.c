@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "instrumentation.h"
 
 // The data structure
@@ -418,7 +419,18 @@ void ImageThreshold(Image img, uint8 thr) { ///
 void ImageBrighten(Image img, double factor) { ///
     assert (img != NULL);
     // ? assert (factor >= 0.0);
-    // Insert your code here!
+
+    uint8 maxval = img->maxval;
+    size_t length = img->width * img->height;
+    uint8 *const pix = img->pixel;
+
+    for (size_t i = 0; i < length; i++) {
+        pix[i] = (uint8)round(pix[i] * factor) /* % maxval+1 */;
+    }
+
+    // FIXME: Como fazemos uma leitura e uma escrita por pixel, talvez deva
+    // incrementar em 2 * length?
+    PIXMEM += (unsigned long)length;
 }
 
 
