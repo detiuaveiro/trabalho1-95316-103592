@@ -201,7 +201,7 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 /// Should never fail, and should preserve global errno/errCause.
 void ImageDestroy(Image* imgp) { ///
     if(imgp == NULL){return;}
-    Image i = imgp;
+    Image i = *imgp;
     free(i->pixel);
     free(i);
     imgp = NULL;
