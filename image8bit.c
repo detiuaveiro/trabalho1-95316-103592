@@ -31,6 +31,15 @@
 uint8 u8max(uint8 a, uint8 b) { return (a >= b) ? a : b; }
 uint8 u8min(uint8 a, uint8 b) { return (a <= b) ? a : b; }
 
+uint8 u8clamp(int x)
+{
+    if (x > 255)
+        return 255;
+    if (x < 0)
+        return 0;
+    return x;
+}
+
 // The data structure
 //
 // An image is stored in a structure containing 3 fields:
@@ -439,7 +448,7 @@ void ImageBrighten(Image img, double factor) { ///
     uint8 *const pix = img->pixel;
 
     for (size_t i = 0; i < length; i++) {
-        pix[i] = u8min((uint8)round(pix[i] * factor), maxval);
+        pix[i] = u8min(u8clamp(round(pix[i] * factor)), maxval);
     }
 
     // Incrementar duas vezes (leitura e escrita).
