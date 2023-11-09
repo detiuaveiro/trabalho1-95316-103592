@@ -374,7 +374,7 @@ uint8 ImageGetPixel(Image img, int x, int y) { ///
 
 /// Set the pixel at position (x,y) to new level.
 void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
-    assert (img != NULL);f
+    assert (img != NULL);
     PIXMEM += 1;  // count one pixel access (store)
     img->pixel[G(img, x, y)] = level;
 } 
