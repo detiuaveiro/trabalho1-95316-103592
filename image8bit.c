@@ -320,7 +320,17 @@ int ImageMaxval(Image img) { ///
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
     assert (img != NULL);
+    min = PixMax;
+    max = 0;
+    for (int i = 0; i < img->width; i++){
+    	for (int j = 0; j < img->height; i++){
+    		pix = ImageGetPixel(img,i,j);
+    		if (pix > max){max = pix;}
+    		if (pix < min){min = pix;}
+    	}
+    }
     // Insert your code here!
+    
 }
 
 /// Check if pixel position (x,y) is inside img.
@@ -333,6 +343,7 @@ int ImageValidPos(Image img, int x, int y) { ///
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
     assert (img != NULL);
     // Insert your code here!
+    
 }
 
 /// Pixel get & set operations
@@ -348,6 +359,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
     int index;
     // Insert your code here!
+    index = y*width + x;
     assert (0 <= index && index < img->width*img->height);
     return index;
 }
@@ -362,8 +374,7 @@ uint8 ImageGetPixel(Image img, int x, int y) { ///
 
 /// Set the pixel at position (x,y) to new level.
 void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
-    assert (img != NULL);
-    assert (ImageValidPos(img, x, y));
+    assert (img != NULL);f
     PIXMEM += 1;  // count one pixel access (store)
     img->pixel[G(img, x, y)] = level;
 } 
@@ -419,7 +430,7 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
     assert (img != NULL);
-    // ? assert (factor >= 0.0);
+    assert (factor >= 0.0);
 
     uint8 maxval = img->maxval;
     size_t length = img->width * img->height;
