@@ -330,16 +330,18 @@ int ImageMaxval(Image img) { ///
 void ImageStats(Image img, uint8* min, uint8* max) { ///
     assert (img != NULL);
     uint8 pix;
-    min = PixMax;
-    max = 0;
+    uint8 curr_min = PixMax;
+    uint8 curr_max = 0;
     for (int i = 0; i < img->width; i++){
-    	for (int j = 0; j < img->height; i++){
+    	for (int j = 0; j < img->height; j++){
     		pix = ImageGetPixel(img,i,j);
-    		if (pix > max){max = pix;}
-    		if (pix < min){min = pix;}
+    		if (pix > curr_max){curr_max = pix;}
+    		if (pix < curr_min){curr_min = pix;}
     	}
     }
-    // Insert your code here!
+    
+    *max = curr_max;
+    *min = curr_min;
     
 }
 
