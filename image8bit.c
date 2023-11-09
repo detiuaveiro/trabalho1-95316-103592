@@ -24,7 +24,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 #include "instrumentation.h"
 
@@ -188,17 +187,19 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
     assert (0 < maxval && maxval <= PixMax);
 
     size_t buffer_size = width * height * sizeof(uint8);
-    
+
     struct image *img = malloc(sizeof(struct image));
     uint8 *pixels = malloc(buffer_size);
-    
-    if (img && pixels) {
-        memset(pixels, 0, buffer_size);
 
+    if (img && pixels) {
         img->width = width;
         img->height = height;
         img->maxval = maxval;
         img->pixel = pixels;
+
+        for (int i = 0; i < buffer_size; i++) {
+            pixels[i] = 0;
+        }
     } else {
         // FIXME: Falta definir errno e mensagem de erro.
         free(img);
