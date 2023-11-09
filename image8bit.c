@@ -87,6 +87,13 @@ struct image {
 //
 // Additional information:  man 3 errno;  man 3 error;
 
+// Error code enumeration
+enum ERRNO {
+    ERRNO_SUCCESS = 0,
+    ERRNO_OUT_OF_MEMORY,
+    ERRNO_UNEXPECTED_ERROR = UINT8_MAX
+};
+
 // Variable to preserve errno temporarily
 static int errsave = 0;
 
@@ -204,6 +211,8 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
         // FIXME: Falta definir errno e mensagem de erro.
         free(img);
         img = NULL;
+        errno = ERRNO_OUT_OF_MEMORY;
+        errCause = "Could not allocate pixel buffer: Out of memory.";
     }
     
     return img;
