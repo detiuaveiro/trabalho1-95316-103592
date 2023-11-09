@@ -343,6 +343,7 @@ int ImageValidPos(Image img, int x, int y) { ///
 /// Check if rectangular area (x,y,w,h) is completely inside img.
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
     assert (img != NULL);
+    return ImageValidPos(img,x,y) && ImageValidPos(img,x+w,y+h);
     // Insert your code here!
     
 }
@@ -469,6 +470,8 @@ void ImageBrighten(Image img, double factor) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) { ///
     assert (img != NULL);
+    Image imgrot; 
+    
     // Insert your code here!
 }
 
