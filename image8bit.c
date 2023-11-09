@@ -561,7 +561,21 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
     assert (ImageValidRect(img1, x, y, img2->width, img2->height));
-    // Insert your code here!
+
+    int w2 = img2->width;
+    int h2 = img2->height;
+
+    for (int i = 0; i < w2; i++) {
+        for (int j = 0; j < h2; j++) {
+            int xi = x+i, yj = y+j;
+            uint8 pix1 = ImageGetPixel(img1, xi, yj);
+            uint8 pix2 = ImageGetPixel(img2, i, j);
+
+            // Alpha não está limitado a [0.0, 1.0]. Que efeitos podemos esperar?
+            uint8 pix = u8clamp(round(pix1 * (1-alpha) + pix2 * alpha));
+            ImageSetPixel(img1, xi, yj, pix);
+        }
+    }
 }
 
 /// Compare an image to a subimage of a larger image.
