@@ -513,7 +513,19 @@ Image ImageMirror(Image img) { ///
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
     assert (img != NULL);
     assert (ImageValidRect(img, x, y, w, h));
-    // Insert your code here!
+
+    Image crop = ImageCreate(w, h, img->maxval);
+
+    if (crop) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                uint8 pix = ImageGetPixel(img, x+i, y+j);
+                ImageSetPixel(crop, i, j, pix);
+            }
+        }
+    }
+
+    return crop;
 }
 
 
