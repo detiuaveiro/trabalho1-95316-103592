@@ -320,6 +320,7 @@ int ImageMaxval(Image img) { ///
 /// *max is set to the maximum.
 void ImageStats(Image img, uint8* min, uint8* max) { ///
     assert (img != NULL);
+    uint8 pix;
     min = PixMax;
     max = 0;
     for (int i = 0; i < img->width; i++){
@@ -359,7 +360,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
     int index;
     // Insert your code here!
-    index = y*width + x;
+    index = y * img->width + x;
     assert (0 <= index && index < img->width*img->height);
     return index;
 }
