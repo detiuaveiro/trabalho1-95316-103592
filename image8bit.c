@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "instrumentation.h"
 
@@ -491,7 +492,18 @@ void ImageBrighten(Image img, double factor) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) { ///
     assert (img != NULL);
-    Image imgrot; 
+    Image imgrot = ImageCreate(img->height,img->width,img->pixel);
+    if (imgrot == NULL){
+        return NULL;
+    }
+    for(int i = 0; i < img->width; i++){
+        for(int j = 0; j < img->height; j++){
+            uint8 pixelValue = ImageGetPixel(img,i,j);
+            //switch i and j for 90º rotation
+            ImageSetPixel(imgrot,j,img->width-1-i,pixelValue);
+        }
+    }
+    return imgrot;
     
     // Insert your code here!
 }
@@ -505,6 +517,18 @@ Image ImageRotate(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageMirror(Image img) { ///
     assert (img != NULL);
+    Image imgmir = ImageCreate(img->width,img->height,img->pixel);
+    if (imgmir == NULL){
+        return NULL;
+    }
+    for(int i = 0; i < img->width; i++){
+        for(int j = 0; j < img->height; j++){
+            uint8 pixelValue = ImageGetPixel(img,i,j);
+            //mirror x
+            ImageSetPixel(imgmir,img->width - 1 - i,j,pixelValue);
+        }
+    }
+
     // Insert your code here!
 }
 
@@ -523,7 +547,7 @@ Image ImageMirror(Image img) { ///
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
     assert (img != NULL);
     assert (ImageValidRect(img, x, y, w, h));
-
+    
     Image crop = ImageCreate(w, h, img->maxval);
 
     if (crop) {
@@ -549,7 +573,7 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
     assert (ImageValidRect(img1, x, y, img2->width, img2->height));
-
+    
     int w2 = img2->width;
     int h2 = img2->height;
 
@@ -571,7 +595,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
     assert (ImageValidRect(img1, x, y, img2->width, img2->height));
-
+    
     int w2 = img2->width;
     int h2 = img2->height;
 
