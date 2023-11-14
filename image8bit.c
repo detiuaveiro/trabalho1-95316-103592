@@ -528,7 +528,8 @@ Image ImageMirror(Image img) { ///
             ImageSetPixel(imgmir,img->width - 1 - i,j,pixelValue);
         }
     }
-
+    return imgmir;
+    
     // Insert your code here!
 }
 
