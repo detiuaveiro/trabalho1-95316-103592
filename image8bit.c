@@ -523,13 +523,12 @@ Image ImageMirror(Image img) { ///
     }
     for(int i = 0; i < img->width; i++){
         for(int j = 0; j < img->height; j++){
-            uint8 pixelValue = ImageGetPixel(img,img->width - 1 - i,j);
+            uint8 pixelValue = ImageGetPixel(img,i,j);
             //mirror x
-            ImageSetPixel(imgmir,i,j,pixelValue);
+            ImageSetPixel(imgmir,img->width - 1 - i,j,pixelValue);
         }
     }
     return imgmir;
-
     // Insert your code here!
 }
 
