@@ -492,7 +492,7 @@ void ImageBrighten(Image img, double factor) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) { ///
     assert (img != NULL);
-    Image imgrot = ImageCreate(img->height,img->width,img->pixel);
+    Image imgrot = ImageCreate(img->height,img->width,img->maxval);
     if (imgrot == NULL){
         return NULL;
     }
@@ -517,7 +517,7 @@ Image ImageRotate(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageMirror(Image img) { ///
     assert (img != NULL);
-    Image imgmir = ImageCreate(img->width,img->height,img->pixel);
+    Image imgmir = ImageCreate(img->width,img->height,img->maxval);
     if (imgmir == NULL){
         return NULL;
     }
