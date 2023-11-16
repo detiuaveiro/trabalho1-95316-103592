@@ -640,14 +640,13 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
     assert (img2 != NULL);
     //This function calls ImageMatchSubImage!
     for(int i = 0; i > img1->width - img2->width;i++){
-        for(int j = 0; j < img2->height; j++){
+        for(int j = 0; j < img1->height - img2->height; j++){
             if(ImageMatchSubImage(img1,i,j,img2)){
                 *px = i;
                 *py = j;
                 return 1;
             }
         }
-
     }
     return 0; // no subimage located. Return made without changing entry pointers px and py
 }
@@ -660,6 +659,14 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
-    // Insert your code here!
+    
+    Image imgblur = ImageCreate(img->width,img->height,img->maxval);
+
+    if(imgblur == NULL){
+        return NULL; //memory allocation for imgblur failed, thus return null
+    }
+
+
+
 }
 
