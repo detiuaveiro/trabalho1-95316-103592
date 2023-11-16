@@ -673,7 +673,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
                     }
                 }
             }
-            uint8 mean = count > 0 ? (uint8)(sum/count) : 0;
+            uint8 mean = count > 0 ? (uint8)(round(sum/count)) : 0;
             ImageSetPixel(imgblur,i,j,mean);
         }
     }
