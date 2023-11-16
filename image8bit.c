@@ -657,16 +657,16 @@ void ImageBlur(Image img, int dx, int dy) { ///
     Image imgblur = ImageCreate(img->width,img->height,img->maxval);
 
     if(imgblur == NULL){
-        return NULL; //memory allocation for imgblur failed, thus return null
+        return; //memory allocation for imgblur failed, thus return null
     }
 
     for(size_t i = 0; i < img->width;i++){
-        for(size_t  j = 0; j < img->width;j++){
+        for(size_t  j = 0; j < img->height;j++){
             int count = 0;
             int sum = 0;
 
-            for(size_t  m = -dx; m <= dx; m++){
-                for(size_t  n = -dy; n <= dy; n++){
+            for(int m = -dx; m <= dx; m++){
+                for(int n = -dy; n <= dy; n++){
                     if(ImageValidPos(img,i + m, j + n)){
                         sum += ImageGetPixel(img,i + m,j + n);
                         count++;
@@ -681,7 +681,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
     ///copy the blurred one to the normal one, replacing it
 
     for(size_t i = 0; i < img->width;i++){
-        for(size_t  j = 0; j < img->width;j++){
+        for(size_t  j = 0; j < img->height;j++){
             ImageSetPixel(img,i,j,ImageGetPixel(imgblur,i,j));
         }
     }
