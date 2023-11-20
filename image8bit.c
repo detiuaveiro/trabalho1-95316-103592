@@ -168,12 +168,14 @@ static int check(int condition, const char* failmsg) {
 void ImageInit(void) { ///
     InstrCalibrate();
     InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
+    InstrName[1] = "pixcomp"; // InstrCount[1] will count pixel comparisons.
     // Name other counters here...
     
 }
 
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
+#define PIXCOMP InstrCount[1]
 // Add more macros here...
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
@@ -625,6 +627,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
         for(size_t j = 0; j < img2->height; j++){
             uint8 pix1 = ImageGetPixel(img1, x+i, y+j);
             uint8 pix2 = ImageGetPixel(img2, i, j);
+            PIXCOMP += 1;
             if(pix1 != pix2){
                 return 0; //subimage does not match
             }
