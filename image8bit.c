@@ -28,10 +28,10 @@
 #include <math.h>
 #include "instrumentation.h"
 
-uint8 u8max(uint8 a, uint8 b) { return (a >= b) ? a : b; }
-uint8 u8min(uint8 a, uint8 b) { return (a <= b) ? a : b; }
+// static uint8 u8max(uint8 a, uint8 b) { return (a >= b) ? a : b; }
+static uint8 u8min(uint8 a, uint8 b) { return (a <= b) ? a : b; }
 
-uint8 u8clamp(int x)
+static uint8 u8clamp(int x)
 {
     if (x > 255)
         return 255;
