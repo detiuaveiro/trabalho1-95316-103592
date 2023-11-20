@@ -159,14 +159,17 @@ static int check(int condition, const char* failmsg) {
 void ImageInit(void) { ///
     InstrCalibrate();
     InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
-    InstrName[1] = "pixcomp"; // InstrCount[1] will count pixel comparisons.
+    InstrName[1] = "pixops";  // InstrCount[1] will count pixel operations.
+                              // We define those as: any single comparison or
+                              // computation of pixel values.
+                              // We specifically DON'T count memory access for these.
     // Name other counters here...
     
 }
 
 // Macros to simplify accessing instrumentation counters:
 #define PIXMEM InstrCount[0]
-#define PIXCOMP InstrCount[1]
+#define PIXOPS InstrCount[1]
 // Add more macros here...
 
 // TIP: Search for PIXMEM or InstrCount to see where it is incremented!
@@ -200,6 +203,9 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 
         for (int i = 0; i < buffer_size; i++) {
             pixels[i] = 0;
+
+            // Should we count initialisation as a memory access?
+            PIXMEM += (unsigned long)buffer_size;
         }
     } else {
         free(img);
@@ -415,8 +421,8 @@ void ImageNegative(Image img) { ///
         pix[i] = maxval - pix[i];
     }
 
-    // Incrementar duas vezes (leitura e escrita).
-    PIXMEM += (unsigned long)length * 2;
+    PIXMEM += (unsigned long)length * 2;   // Increment twice (read and write).
+    PIXOPS += (unsigned long)length;       // One computation (sum).
 }
 
 /// Apply threshold to image.
@@ -433,8 +439,8 @@ void ImageThreshold(Image img, uint8 thr) { ///
         pix[i] = pix[i] >= thr ? maxval : 0;
     }
 
-    // Incrementar duas vezes (leitura e escrita).
-    PIXMEM += (unsigned long)length * 2;
+    PIXMEM += (unsigned long)length * 2;   // Increment twice (read and write).
+    PIXOPS += (unsigned long)length;       // One comparison.
 }
 
 /// Brighten image by a factor.
@@ -453,8 +459,8 @@ void ImageBrighten(Image img, double factor) { ///
         pix[i] = u8min(u8round(pix[i] * factor), maxval);
     }
 
-    // Incrementar duas vezes (leitura e escrita).
-    PIXMEM += (unsigned long)length * 2;
+    PIXMEM += (unsigned long)length * 2;   // Increment twice (read and write).
+    PIXOPS += (unsigned long)length * 2;   // One product and one comparison.
 }
 
 
@@ -602,6 +608,8 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
             uint8 pix2 = ImageGetPixel(img2, i, j);
 
             uint8 pix = u8min(u8round(pix1 * (1-alpha) + pix2 * alpha), maxval);
+            PIXOPS += (unsigned long)4; // Two products, a sum and a comparison.
+
             ImageSetPixel(img1, xi, yj, pix);
         }
     }
@@ -619,7 +627,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
         for(size_t j = 0; j < img2->height; j++){
             uint8 pix1 = ImageGetPixel(img1, x+i, y+j);
             uint8 pix2 = ImageGetPixel(img2, i, j);
-            PIXCOMP += 1;
+            PIXOPS += 1;    // One comparison.
             if(pix1 != pix2){
                 return 0; //subimage does not match
             }
@@ -680,6 +688,8 @@ void ImageBlur(Image img, int dx, int dy) { ///
             }
 
             uint8 mean = count > 0 ? u8round((float)sum/count) : 0;
+            PIXOPS += count + (count > 0);
+
             ImageSetPixel(imgblur, i, j, mean);
         }
     }
