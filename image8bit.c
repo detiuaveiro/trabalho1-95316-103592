@@ -24,7 +24,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "instrumentation.h"
 
 // static uint8 u8max(long a, long b) { return (a >= b) ? a : b; }
