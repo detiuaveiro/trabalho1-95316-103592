@@ -81,6 +81,27 @@ test10: $(PROGS) setup
 .PHONY: tests
 tests: $(TESTS)
 
+perfblur_s:	$(PROGS) pgm
+	./imageTool pgm/small/bird_256x256.pgm tic blur 2,2 toc
+	./imageTool pgm/small/bird_256x256.pgm tic blur 4,4 toc
+	./imageTool pgm/small/bird_256x256.pgm tic blur 8,8 toc
+	./imageTool pgm/small/bird_256x256.pgm tic blur 16,16 toc
+	./imageTool pgm/small/bird_256x256.pgm tic blur 32,32 toc
+
+perfblur_m:	$(PROGS) pgm
+	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 2,2 toc
+	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 4,4 toc
+	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 8,8 toc
+	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 16,16 toc
+	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 32,32 toc
+
+perfblur_l:	$(PROGS) pgm
+	./imageTool pgm/large/einstein_940x940.pgm tic blur 2,2 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic blur 4,4 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic blur 8,8 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic blur 16,16 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic blur 32,32 toc
+
 # Make uses builtin rule to create .o from .c files.
 
 cleanobj:
