@@ -25,11 +25,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include "instrumentation.h"
 
 // static uint8 u8max(long a, long b) { return (a >= b) ? a : b; }
 static uint8 u8min(long a, long b) { return (a <= b) ? a : b; }
+static uint8 u8round(double d) { return d + 0.5; }
+//static long long llround(double d) { return d + 0.5; }
 
 // The data structure
 //
@@ -450,7 +451,7 @@ void ImageBrighten(Image img, double factor) { ///
     uint8 *const pix = img->pixel;
 
     for (size_t i = 0; i < length; i++) {
-        pix[i] = u8min(round(pix[i] * factor), maxval);
+        pix[i] = u8min(u8round(pix[i] * factor), maxval);
     }
 
     // Incrementar duas vezes (leitura e escrita).
@@ -601,7 +602,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
             uint8 pix1 = ImageGetPixel(img1, xi, yj);
             uint8 pix2 = ImageGetPixel(img2, i, j);
 
-            uint8 pix = u8min(round(pix1 * (1-alpha) + pix2 * alpha), maxval);
+            uint8 pix = u8min(u8round(pix1 * (1-alpha) + pix2 * alpha), maxval);
             ImageSetPixel(img1, xi, yj, pix);
         }
     }
@@ -679,7 +680,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
                 }
             }
 
-            uint8 mean = count > 0 ? (uint8)(round((float)sum/count)) : 0;
+            uint8 mean = count > 0 ? u8round((float)sum/count) : 0;
             ImageSetPixel(imgblur, i, j, mean);
         }
     }
