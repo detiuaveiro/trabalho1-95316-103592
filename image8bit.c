@@ -209,7 +209,6 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
             pixels[i] = 0;
         }
     } else {
-        // FIXME: Falta definir errno e mensagem de erro.
         free(img);
         img = NULL;
         errno = ERRNO_OUT_OF_MEMORY;
@@ -343,17 +342,17 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
     uint8 pix;
     uint8 curr_min = PixMax;
     uint8 curr_max = 0;
+
     for (size_t i = 0; i < img->width; i++){
-    	for (size_t j = 0; j < img->height; j++){
-    		pix = ImageGetPixel(img,i,j);
-    		if (pix > curr_max){curr_max = pix;}
-    		if (pix < curr_min){curr_min = pix;}
-    	}
+        for (size_t j = 0; j < img->height; j++){
+            pix = ImageGetPixel(img,i,j);
+            if (pix > curr_max){curr_max = pix;}
+            if (pix < curr_min){curr_min = pix;}
+        }
     }
     
     *max = curr_max;
     *min = curr_min;
-    
 }
 
 /// Check if pixel position (x,y) is inside img.
@@ -489,17 +488,20 @@ void ImageBrighten(Image img, double factor) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageRotate(Image img) { ///
     assert (img != NULL);
-    Image imgrot = ImageCreate(img->height,img->width,img->maxval);
+    Image imgrot = ImageCreate(img->height, img->width, img->maxval);
+
     if (imgrot == NULL){
         return NULL;
     }
+
     for(size_t i = 0; i < img->width; i++){
         for(size_t j = 0; j < img->height; j++){
-            uint8 pixelValue = ImageGetPixel(img,i,j);
+            uint8 pixelValue = ImageGetPixel(img, i, j);
             //switch i and j for 90º rotation
-            ImageSetPixel(imgrot,j,img->width-1-i,pixelValue);
+            ImageSetPixel(imgrot, j, img->width-1-i, pixelValue);
         }
     }
+
     return imgrot;
 }
 
@@ -512,17 +514,21 @@ Image ImageRotate(Image img) { ///
 /// On failure, returns NULL and errno/errCause are set accordingly.
 Image ImageMirror(Image img) { ///
     assert (img != NULL);
-    Image imgmir = ImageCreate(img->width,img->height,img->maxval);
+
+    Image imgmir = ImageCreate(img->width, img->height, img->maxval);
+
     if (imgmir == NULL){
         return NULL;
     }
+
     for(size_t i = 0; i < img->width; i++){
         for(size_t j = 0; j < img->height; j++){
             uint8 pixelValue = ImageGetPixel(img,i,j);
             //mirror x
-            ImageSetPixel(imgmir,img->width - 1 - i,j,pixelValue);
+            ImageSetPixel(imgmir, img->width - 1 - i, j, pixelValue);
         }
     }
+
     return imgmir;
 }
 
@@ -614,15 +620,17 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
     assert (ImageValidPos(img1, x, y));
+
     for(size_t i = 0; i < img2->width; i++){
         for(size_t j = 0; j < img2->height; j++){
-            uint8 pix1 = ImageGetPixel(img1,x+i,y+j);
-            uint8 pix2 = ImageGetPixel(img2,i,j);
+            uint8 pix1 = ImageGetPixel(img1, x+i, y+j);
+            uint8 pix2 = ImageGetPixel(img2, i, j);
             if(pix1 != pix2){
                 return 0; //subimage does not match
             }
         }
     }
+
     return 1; //subimage matches
 }
 
@@ -633,16 +641,18 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
+
     //This function calls ImageMatchSubImage!
     for(size_t i = 0; i < img1->width - img2->width;i++){
-        for(size_t  j = 0; j < img1->height - img2->height; j++){
-            if(ImageMatchSubImage(img1,i,j,img2)){
+        for(size_t j = 0; j < img1->height - img2->height; j++){
+            if(ImageMatchSubImage(img1, i, j, img2)){
                 *px = i;
                 *py = j;
                 return 1;
             }
         }
     }
+
     return 0; // no subimage located. Return made without changing entry pointers px and py
 }
 
@@ -654,40 +664,40 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
-    
-    Image imgblur = ImageCreate(img->width,img->height,img->maxval);
+    Image imgblur = ImageCreate(img->width, img->height, img->maxval);
 
     if(imgblur == NULL){
         return; //memory allocation for imgblur failed, thus return null
     }
 
-    for(size_t i = 0; i < img->width;i++){
-        for(size_t  j = 0; j < img->height;j++){
+    for(size_t i = 0; i < img->width; i++){
+        for(size_t j = 0; j < img->height; j++){
             int count = 0;
             int sum = 0;
 
             for(int m = -dx; m <= dx; m++){
                 for(int n = -dy; n <= dy; n++){
-                    if(ImageValidPos(img,i + m, j + n)){
-                        sum += ImageGetPixel(img,i + m,j + n);
+                    if(ImageValidPos(img, i+m, j+n)){
+                        sum += ImageGetPixel(img, i+m, j+n);
                         count++;
                     }
                 }
             }
+
             uint8 mean = count > 0 ? (uint8)(round((float)sum/count)) : 0;
-            ImageSetPixel(imgblur,i,j,mean);
+            ImageSetPixel(imgblur, i, j, mean);
         }
     }
+
     ///at this point, if everything goes to plan, the image imgblur should be a blurred copy of img. now all we need to do is to 
     ///copy the blurred one to the normal one, replacing it
 
     for(size_t i = 0; i < img->width;i++){
         for(size_t  j = 0; j < img->height;j++){
-            ImageSetPixel(img,i,j,ImageGetPixel(imgblur,i,j));
+            ImageSetPixel(img, i, j, ImageGetPixel(imgblur, i, j));
         }
     }
 
     /// now we have to dump the now useless imgblur.
     ImageDestroy(&imgblur);
-
 }
