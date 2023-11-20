@@ -588,6 +588,7 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
 void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
+    assert ((alpha >= 0.0) && (alpha <= 1.0));
     assert (ImageValidRect(img1, x, y, img2->width, img2->height));
     
     int w2 = img2->width;
