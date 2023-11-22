@@ -29,7 +29,9 @@
 // static uint8 u8max(long a, long b) { return (a >= b) ? a : b; }
 static uint8 u8min(long a, long b) { return (a <= b) ? a : b; }
 static uint8 u8round(double d) { return d + 0.5; }
-//static long long llround(double d) { return d + 0.5; }
+static long lmin(long a, long b) { return (a <= b) ? a : b; }
+static long lmax(long a, long b) { return (a >= b) ? a : b; }
+static long long llround(double d) { return d + 0.5; }
 
 // The data structure
 //
@@ -666,7 +668,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
-void ImageBlur(Image img, int dx, int dy) { ///
+void ImageBlur_naïve(Image img, int dx, int dy) { ///
     Image imgblur = ImageCreate(img->width, img->height, img->maxval);
 
     if(imgblur == NULL){
@@ -705,4 +707,66 @@ void ImageBlur(Image img, int dx, int dy) { ///
 
     /// now we have to dump the now useless imgblur.
     ImageDestroy(&imgblur);
+}
+
+void ImageBlur_optimised(Image img, int dx, int dy) {
+    size_t img_length = img->width * img->height;
+    uint8_t *const pixels = img->pixel;
+
+    uint32_t *st = malloc(sizeof(uint32_t) * img_length);
+    
+    if (!st) {
+        // Do error stuff...
+        return;
+    }
+
+    /* st[0] = pixels[0];
+
+    for (size_t i = 1; i < img->width; i++) {
+        st[i] = pixels[i] + st[i-1];
+        st[G(img, 0, i)] = pixels[G(img, 0, i)] + st[G(img, 0, i-1)];
+    }*/
+
+    for (size_t y = 1; y < img->height; y++) {
+        for (size_t x = 1; x < img->width; x++) {
+            size_t index = G(img, x, y);
+            st[index] = pixels[index] + st[G(img, x-1, y)] + st[G(img, x, y-1)] - st[G(img, x-1, y-1)];
+        }
+    }
+
+    // We're counting ST access as pixel access as well.
+    PIXMEM += (unsigned long)5 * (img_length - (img->width + img->height));
+    PIXOPS += (unsigned long)4 * (img_length - (img->width + img->height));
+
+    for (int y = 0; y < img->height; y++) {
+        for (int x = 0; x < img->width; x++) {
+            // Filtering kernel edges
+            int kleft = lmax(x-dx-1, 0);
+            int ktop = lmax(y-dy-1, 0);
+            int kbottom = lmin(y+dy, img->height-1);
+            int kright = lmin(x+dx, img->width-1);
+            int karea = (kright - kleft) * (kbottom - ktop);
+
+            // Filtering kernel coordinates.
+            int nw = G(img, kleft, ktop);
+            int ne = G(img, kright, ktop);
+            int sw = G(img, kleft, kbottom);
+            int se = G(img, kright, kbottom);
+
+            int32_t sum = st[nw] + st[se] - st[ne] - st[sw];
+            int32_t mean = llround(sum / (double)karea);
+            uint8_t pix = mean;
+
+            pixels[G(img, x, y)] = pix;
+        }
+    }
+    
+    PIXMEM += (unsigned long)(5 * img_length);
+    PIXOPS += (unsigned long)(5 * img_length);
+    
+    free(st);
+}
+
+void ImageBlur(Image img, int dx, int dy) {
+    ImageBlur_optimised(img, dx, dy);
 }
