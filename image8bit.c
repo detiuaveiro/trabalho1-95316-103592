@@ -643,7 +643,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 /// Searches for img2 inside img1.
 /// If a match is found, returns 1 and matching position is set in vars (*px, *py).
 /// If no match is found, returns 0 and (*px, *py) are left untouched.
-int ImageLocateSubImage1(Image img1, int* px, int* py, Image img2) { ///
+int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
     assert (img1 != NULL);
     assert (img2 != NULL);
 
@@ -661,59 +661,6 @@ int ImageLocateSubImage1(Image img1, int* px, int* py, Image img2) { ///
     return 0; // no subimage located. Return made without changing entry pointers px and py
 }
 
-// It's better optimised for some cases (test/crop.pgm), but worse for others.
-int ImageLocateSubImage2(Image img1, int* px, int* py, Image img2) { ///
-    assert (img1 != NULL);
-    assert (img2 != NULL);
-
-    size_t wsane = img1->width - img2->width;
-    size_t hsane = img1->height - img2->height;
-
-    size_t xhf = 0, yhf = 0;
-    uint8_t diff = 0;
-
-    for (size_t y = 0; y < img2->height; y++) {
-        uint8_t prev = ImageGetPixel(img2, 0, y);
-
-        for (size_t x = 1; x < img2->width; x++) {
-            uint8_t p = ImageGetPixel(img2, x, y);
-            uint8_t d = p - prev;
-
-            if (d > diff) {
-                diff = d;
-                xhf = x; yhf = y;
-            }
-
-            prev = p;
-            PIXOPS += (unsigned long)3;
-            if (diff == 255) break;
-        }
-
-        PIXOPS += (unsigned long)1;
-        if (diff == 255) break;
-    }
-
-    for (size_t y = 0; y < hsane; y++) {
-        for (size_t x = 0; x < wsane; x++) {
-            if (ImageGetPixel(img1, x, y) == ImageGetPixel(img2, 0, 0) &&
-                ImageGetPixel(img1, x+xhf, y+yhf) == ImageGetPixel(img2, xhf, yhf))
-            {
-                if (ImageMatchSubImage(img1, x, y, img2)) {
-                    *px = x; *py = y;
-                    return 1;
-                }
-            }
-
-            PIXOPS += (unsigned long)4;
-        }
-    }
-
-    return 0;
-}
-
-int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) {
-    return ImageLocateSubImage2(img1, px, py, img2);
-}
 
 /// Filtering
 
