@@ -81,26 +81,50 @@ test10: $(PROGS) setup
 .PHONY: tests
 tests: $(TESTS)
 
-perfblur_s:	$(PROGS) pgm
+perf_blur_s:	$(PROGS) pgm
 	./imageTool pgm/small/bird_256x256.pgm tic blur 2,2 toc
 	./imageTool pgm/small/bird_256x256.pgm tic blur 4,4 toc
 	./imageTool pgm/small/bird_256x256.pgm tic blur 8,8 toc
 	./imageTool pgm/small/bird_256x256.pgm tic blur 16,16 toc
 	./imageTool pgm/small/bird_256x256.pgm tic blur 32,32 toc
 
-perfblur_m:	$(PROGS) pgm
-	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 2,2 toc
-	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 4,4 toc
-	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 8,8 toc
-	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 16,16 toc
-	./imageTool pgm/medium/ireland-03_640x480.pgm tic blur 32,32 toc
+perf_blur_m:	$(PROGS) pgm
+	./imageTool pgm/medium/mandrill_512x512.pgm tic blur 2,2 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic blur 4,4 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic blur 8,8 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic blur 16,16 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic blur 32,32 toc
 
-perfblur_l:	$(PROGS) pgm
+perf_blur_l:	$(PROGS) pgm
 	./imageTool pgm/large/einstein_940x940.pgm tic blur 2,2 toc
 	./imageTool pgm/large/einstein_940x940.pgm tic blur 4,4 toc
 	./imageTool pgm/large/einstein_940x940.pgm tic blur 8,8 toc
 	./imageTool pgm/large/einstein_940x940.pgm tic blur 16,16 toc
 	./imageTool pgm/large/einstein_940x940.pgm tic blur 32,32 toc
+
+perf_oldblur_s:	$(PROGS) pgm
+	./imageTool pgm/small/bird_256x256.pgm tic oldblur 2,2 toc
+	./imageTool pgm/small/bird_256x256.pgm tic oldblur 4,4 toc
+	./imageTool pgm/small/bird_256x256.pgm tic oldblur 8,8 toc
+	./imageTool pgm/small/bird_256x256.pgm tic oldblur 16,16 toc
+	./imageTool pgm/small/bird_256x256.pgm tic oldblur 32,32 toc
+
+perf_oldblur_m:	$(PROGS) pgm
+	./imageTool pgm/medium/mandrill_512x512.pgm tic oldblur 2,2 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic oldblur 4,4 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic oldblur 8,8 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic oldblur 16,16 toc
+	./imageTool pgm/medium/mandrill_512x512.pgm tic oldblur 32,32 toc
+
+perf_oldblur_l:	$(PROGS) pgm
+	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 2,2 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 4,4 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 8,8 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 16,16 toc
+	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 32,32 toc
+
+# benchmark: $(PROGS) pgm
+#	bash benchmark.sh
 
 # Make uses builtin rule to create .o from .c files.
 
