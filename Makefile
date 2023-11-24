@@ -123,8 +123,12 @@ perf_oldblur_l:	$(PROGS) pgm
 	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 16,16 toc
 	./imageTool pgm/large/einstein_940x940.pgm tic oldblur 32,32 toc
 
-# benchmark: $(PROGS) pgm
-#	bash benchmark.sh
+
+benchmark_blur: $(PROGS) pgm
+	octave benchmark.m blur
+
+benchmark_oldblur: $(PROGS) pgm
+	octave benchmark.m oldblur
 
 # Make uses builtin rule to create .o from .c files.
 

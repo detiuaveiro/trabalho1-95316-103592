@@ -668,7 +668,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
-void ImageBlur_naïve(Image img, int dx, int dy) { ///
+void ImageBlur_naive(Image img, int dx, int dy) { ///
     Image imgblur = ImageCreate(img->width, img->height, img->maxval);
 
     if(imgblur == NULL){
@@ -709,7 +709,7 @@ void ImageBlur_naïve(Image img, int dx, int dy) { ///
     ImageDestroy(&imgblur);
 }
 
-void ImageBlur_optimised(Image img, int dx, int dy) {
+void ImageBlur(Image img, int dx, int dy) {
     size_t img_length = img->width * img->height;
     uint8_t *const pixels = img->pixel;
 
@@ -765,8 +765,4 @@ void ImageBlur_optimised(Image img, int dx, int dy) {
     PIXOPS += (unsigned long)(5 * img_length);
     
     free(st);
-}
-
-void ImageBlur(Image img, int dx, int dy) {
-    ImageBlur_optimised(img, dx, dy);
 }
