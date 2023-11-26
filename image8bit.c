@@ -13,8 +13,9 @@
 // NMec:  Name:
 // 95316  João Diogo Craveiro Ferreira
 // 103592 Bernardo Rodrigues Borges
+// 117814 Jevgeni Arefjev
 // 
-// Date:
+// Date: November 26th, 2023.
 //
 
 #include "image8bit.h"
