@@ -9,6 +9,10 @@
 // João Manuel Rodrigues <jmr@ua.pt>
 // 2023
 
+// Subsequently edited by:
+//    João Ferreira <jd.ferreira@ua.pt>, 2023
+//      Added support for imgblur_naive and errno checking to blur functions.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -56,6 +60,7 @@ static const char* USAGE =
     "  locate          Search PRED in CURR, print matching position, or NOTFOUND\n"
     "\n"              
     "  blur DX,DY      blur CURR using (2DX+1)x(2Dy+1) mean filter\n"
+    "  oldblur DX,DY   Identical to the above, but uses a much slower algorithm.\n"
     "\n"              
     "OPERANDS:\n"     
     "  X,Y             Pixel coordinates: 0,0 is top left corner\n"
@@ -201,14 +206,18 @@ int main(int ac, char* av[]) {
       int dx; int dy;
       if (sscanf(av[k], "%d,%d", &dx, &dy) != 2) { err = 5; break; }
       fprintf(stderr, "Blur I%d with %dx%d mean filter\n", n-1, 2*dx+1, 2*dy+1);
+      errno = 0;
       ImageBlur(img[n-1], dx, dy);
+      if (errno) { err = 4; break; }
     } else if (strcmp(av[k], "oldblur") == 0) {
     if (++k >= ac) { err = 1; break; }
     if (n < 1) { err = 2; break; }
     int dx; int dy;
     if (sscanf(av[k], "%d,%d", &dx, &dy) != 2) { err = 5; break; }
     fprintf(stderr, "Blur I%d with %dx%d mean filter\n", n-1, 2*dx+1, 2*dy+1);
+    errno = 0;
     ImageBlur_naive(img[n-1], dx, dy);
+    if (errno) { err = 4; break; }
     } else if (strcmp(av[k], "save") == 0) {
       if (++k >= ac) { err = 1; break; }
       if (n < 1) { err = 2; break; }

@@ -81,13 +81,6 @@ struct image {
 //
 // Additional information:  man 3 errno;  man 3 error;
 
-// Error code enumeration
-enum ERRNO {
-    ERRNO_SUCCESS = 0,
-    ERRNO_OUT_OF_MEMORY,
-    ERRNO_UNEXPECTED_ERROR = UINT8_MAX
-};
-
 // Variable to preserve errno temporarily
 static int errsave = 0;
 
@@ -205,15 +198,14 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 
         for (int i = 0; i < buffer_size; i++) {
             pixels[i] = 0;
-
-            // Should we count initialisation as a memory access?
-            PIXMEM += (unsigned long)buffer_size;
         }
+
+        PIXMEM += (unsigned long)buffer_size;
     } else {
         free(img);
         img = NULL;
-        errno = ERRNO_OUT_OF_MEMORY;
-        errCause = "Could not allocate pixel buffer: Out of memory.";
+        errno = ENOMEM;
+        errCause = "ImageCreate: Could not create pixel buffer";
     }
     
     return img;
@@ -672,7 +664,9 @@ void ImageBlur_naive(Image img, int dx, int dy) { ///
     Image imgblur = ImageCreate(img->width, img->height, img->maxval);
 
     if(imgblur == NULL){
-        return; //memory allocation for imgblur failed, thus return null
+        errno = ENOMEM;
+        errCause = "ImageBlur_naive: Could not create sum table";
+        return;
     }
 
     for(size_t i = 0; i < img->width; i++){
@@ -716,7 +710,8 @@ void ImageBlur(Image img, int dx, int dy) {
     uint32_t *st = malloc(sizeof(uint32_t) * img_length);
     
     if (!st) {
-        // Do error stuff...
+        errno = ENOMEM;
+        errCause = "ImageBlur: Could not create sum table";
         return;
     }
 
