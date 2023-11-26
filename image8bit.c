@@ -154,13 +154,10 @@ static int check(int condition, const char* failmsg) {
 /// Currently, simply calibrate instrumentation and set names of counters.
 void ImageInit(void) { ///
     InstrCalibrate();
-    InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
+    InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses.
     InstrName[1] = "pixops";  // InstrCount[1] will count pixel operations.
-                              // We define those as: any single comparison or
-                              // computation of pixel values.
-                              // We specifically DON'T count memory access for these.
-    // Name other counters here...
-    
+    // PIXEL OPERATIONS ARE: any single comparison or computation of pixel
+    //      values, excluding loading from and storing to memory.
 }
 
 // Macros to simplify accessing instrumentation counters:
@@ -208,7 +205,7 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
         errno = ENOMEM;
         errCause = "ImageCreate: Could not create pixel buffer";
     }
-    
+
     return img;
 }
 
@@ -340,8 +337,8 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
     for (size_t i = 0; i < img->width; i++){
         for (size_t j = 0; j < img->height; j++){
             pix = ImageGetPixel(img,i,j);
-            if (pix > curr_max){curr_max = pix;}
-            if (pix < curr_min){curr_min = pix;}
+            if (pix > curr_max){ curr_max = pix; }
+            if (pix < curr_min){ curr_min = pix; }
         }
     }
     
@@ -661,6 +658,8 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// Each pixel is substituted by the mean of the pixels in the rectangle
 /// [x-dx, x+dx]x[y-dy, y+dy].
 /// The image is changed in-place.
+
+// NOTICE: This is the old, slow, naïve and infficient algorithm.
 void ImageBlur_naive(Image img, int dx, int dy) { ///
     Image imgblur = ImageCreate(img->width, img->height, img->maxval);
 
@@ -691,8 +690,9 @@ void ImageBlur_naive(Image img, int dx, int dy) { ///
         }
     }
 
-    ///at this point, if everything goes to plan, the image imgblur should be a blurred copy of img. now all we need to do is to 
-    ///copy the blurred one to the normal one, replacing it
+    ///at this point, if everything goes to plan, the image imgblur should be a
+    ///blurred copy of img. now all we need to do is to copy the blurred one
+    ///to the normal one, replacing it
 
     for(size_t i = 0; i < img->width;i++){
         for(size_t  j = 0; j < img->height;j++){
@@ -704,25 +704,23 @@ void ImageBlur_naive(Image img, int dx, int dy) { ///
     ImageDestroy(&imgblur);
 }
 
+// This is the optimized version of the algorithm.
 void ImageBlur(Image img, int dx, int dy) {
     size_t img_length = img->width * img->height;
     uint8_t *const pixels = img->pixel;
 
+    // We're using a summed-area table. Learn more at:
+    // https://en.wikipedia.org/wiki/Summed-area_table
+
     uint32_t *st = malloc(sizeof(uint32_t) * img_length);
-    
+
     if (!st) {
         errno = ENOMEM;
         errCause = "ImageBlur: Could not create sum table";
         return;
     }
 
-    /* st[0] = pixels[0];
-
-    for (size_t i = 1; i < img->width; i++) {
-        st[i] = pixels[i] + st[i-1];
-        st[G(img, 0, i)] = pixels[G(img, 0, i)] + st[G(img, 0, i-1)];
-    }*/
-
+    // STEP 1: Compute the summed-area table.
     for (size_t y = 1; y < img->height; y++) {
         for (size_t x = 1; x < img->width; x++) {
             size_t index = G(img, x, y);
@@ -730,25 +728,29 @@ void ImageBlur(Image img, int dx, int dy) {
         }
     }
 
-    // We're counting ST access as pixel access as well.
+    // We're counting ST reads and writes as pixel memory access.
     PIXMEM += (unsigned long)5 * (img_length - (img->width + img->height));
     PIXOPS += (unsigned long)4 * (img_length - (img->width + img->height));
 
+    // STEP 2: Compute the blur.
     for (int y = 0; y < img->height; y++) {
         for (int x = 0; x < img->width; x++) {
-            // Filtering kernel edges
+            // STEP 2.1: Edges of kernel (area to be averaged over.)
+            // Edges of the filtering kernel.
             int kleft = lmax(x-dx-1, 0);
             int ktop = lmax(y-dy-1, 0);
             int kbottom = lmin(y+dy, img->height-1);
             int kright = lmin(x+dx, img->width-1);
+
             int karea = (kright - kleft) * (kbottom - ktop);
 
-            // Filtering kernel coordinates.
+            // Vertices of the filtering kernel.
             int nw = G(img, kleft, ktop);
             int ne = G(img, kright, ktop);
             int sw = G(img, kleft, kbottom);
             int se = G(img, kright, kbottom);
 
+            // STEP 2.2: Grab the appropriate sums from the ST and compute avg.
             int32_t sum = st[nw] + st[se] - st[ne] - st[sw];
             int32_t mean = llround(sum / (double)karea);
             uint8_t pix = mean;
