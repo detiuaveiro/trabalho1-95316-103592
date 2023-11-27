@@ -5,6 +5,9 @@ test/
 imageTest
 imageTool
 
+# BUT DO INCLUDE:
+!benchmark/input/*.pgm
+
 # Prerequisites
 *.d
 

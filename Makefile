@@ -125,10 +125,10 @@ perf_oldblur_l:	$(PROGS) pgm
 
 
 benchmark_blur: $(PROGS) pgm
-	octave benchmark.m blur
+	octave benchmark/blur.m blur 5
 
 benchmark_oldblur: $(PROGS) pgm
-	octave benchmark.m oldblur
+	octave benchmark/blur.m oldblur 5
 
 # Make uses builtin rule to create .o from .c files.
 
